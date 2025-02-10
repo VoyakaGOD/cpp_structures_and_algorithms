@@ -1,29 +1,25 @@
-import subprocess
+from random import randint, choice
+from sys import argv
+import string
+import sys
+import os
 
-def run_exe(exe_path : str, input : str):
-    process = subprocess.Popen(
-        exe_path, stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    ) 
-    return process.communicate(input=input) # (out, err)
+sys.path.append(os.path.abspath('../../'))
+from tests_lib import apply_tests_range
 
-def test(exe_path : str, input : str, target : str, indent : str):
-    out, err = run_exe(exe_path, input)
-    if out[-1] == "\n" or out[-1] == "\r":
-        out = out[:-1]
-    print(indent + "input: " + input)
-    print(indent + "target output:" + target)
-    if err:
-        print(indent + "(X)Error: " + err)
-        return False
-    if out == target:
-        print(indent + "(V)Passed: " + out)
-        return True
-    else:
-        print(indent + "(X)Failed: " + out)
-        return False
+def generate_path():
+    path = "/root/"
+    rnd = 0
+    while rnd != 20:
+        rnd = randint(1, 20)
+        if rnd == 1:
+            path += "./"
+        elif rnd == 2:
+            path += "../"
+        elif rnd >= 3 and rnd <= 6:
+            path += "/"
+        else:
+            path += choice(string.ascii_letters)
+    return path, os.path.normpath(path).replace("\\", "/")
 
-print("Test 1:")
-test("unix.exe", "/home////////////////////Downloads/////", "/home/Downloads", " " * 4)
+apply_tests_range(argv[1], 50, generate_path)

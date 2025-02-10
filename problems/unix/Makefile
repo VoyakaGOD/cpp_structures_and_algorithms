@@ -10,4 +10,4 @@ build:
 	$(CXX) $(SRC) -o$(OUT) -I$(INCLUDE)
 
 tests:
-	python tests.py
+	python tests.py $(OUT)
