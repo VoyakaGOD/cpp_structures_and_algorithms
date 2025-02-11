@@ -26,10 +26,12 @@ Output:
 #include <string>
 
 #define MAX_URL_LENGTH 20
+#define MAX_STEP 100
 
 class Browser
 {
 private:
+    SmartList<std::string, int> local_history;
     SmartList<std::string, int> history;
     int current_page_index;
     std::string homepage;
@@ -44,6 +46,7 @@ public:
 
 Browser::Browser(std::string homepage) : current_page_index(0), homepage(homepage)
 {
+    local_history.pushBack(homepage);
     history.pushBack(homepage);
 }
 
@@ -52,20 +55,28 @@ void Browser::visit(std::string url)
     if(url.length() > MAX_URL_LENGTH)
         throw std::runtime_error("URL is too long.");
     
-    //history.removeTail();
+    local_history.erase(local_history.begin() + current_page_index + 1, local_history.end());
+    local_history.pushBack(url);
     history.pushBack(url);
+    current_page_index = local_history.getSize() - 1;
 }
 
 void Browser::moveForward(int N)
 {
-    current_page_index = std::min(current_page_index + N, history.getSize() - 1);
-    history.pushBack(history[current_page_index]);
+    if(N < 0 || N > MAX_STEP)
+        throw std::runtime_error("Incorrect step value.");
+
+    current_page_index = std::min(current_page_index + N, local_history.getSize() - 1);
+    history.pushBack(local_history[current_page_index]);
 }
 
 void Browser::moveBack(int N)
 {
+    if(N < 0 || N > MAX_STEP)
+        throw std::runtime_error("Incorrect step value.");
+    
     current_page_index = std::max(current_page_index - N, 0);
-    history.pushBack(history[current_page_index]);
+    history.pushBack(local_history[current_page_index]);
 }
 
 void Browser::showHistory()
@@ -77,10 +88,31 @@ void Browser::showHistory()
 int main()
 {
     Browser browser("homepage");
-    browser.visit("google.com");
-    browser.moveBack(100);
-    browser.moveBack(100);
-    browser.moveForward(1);
-    browser.visit("youtube.com");
-    browser.showHistory();
+    std::string input;
+    try
+    {
+        while(true)
+        {
+            std::getline(std::cin, input);
+            size_t space = input.find(' ');
+            std::string cmd = input.substr(0, space);
+            std::string argv = input.substr(space + 1);
+            if(cmd == "exit")
+                break;
+            else if(cmd == "show")
+                browser.showHistory();
+            else if(cmd == "visit")
+                browser.visit(argv);
+            else if(cmd == "back")
+                browser.moveBack(std::stoi(argv));
+            else if(cmd == "forward")
+                browser.moveForward(std::stoi(argv));
+            else
+                throw std::runtime_error("There is no command [" + cmd + "].");
+        }
+    }
+    catch(const std::runtime_error& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
 }
