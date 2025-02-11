@@ -18,6 +18,30 @@ public:
     SmartListNode(T value) : value(value), next(nullptr) {}
 };
 
+template <typename T>
+class SmartListIterator
+{
+private:
+    std::shared_ptr<SmartListNode<T>> current;
+
+public:
+    SmartListIterator(std::shared_ptr<SmartListNode<T>> node) : current(node) {}
+
+    T& operator*() { return current->value; }
+
+    SmartListIterator& operator++() 
+    {
+        if(current)
+            current = current->next;
+        return *this;
+    }
+    
+    bool operator!=(const SmartListIterator& other) const 
+    {
+        return current != other.current;
+    }
+};
+
 template <typename T, typename SizeType = uint64_t>
 class SmartList
 {
@@ -121,6 +145,16 @@ public:
             head = nullptr;
         size--;
         return lost_node->value;   
+    }
+
+    SmartListIterator<T> begin()
+    {
+        return SmartListIterator<T>(head);
+    }
+
+    SmartListIterator<T> end()
+    {
+        return SmartListIterator<T>(nullptr);
     }
 };
 
