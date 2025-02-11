@@ -29,13 +29,28 @@ public:
 
     T& operator*() { return current->value; }
 
+    std::shared_ptr<SmartListNode<T>> getNode() { return current; }
+
     SmartListIterator& operator++() 
     {
         if(current)
             current = current->next;
         return *this;
     }
-    
+
+    SmartListIterator operator+(size_t step) const
+    {
+        std::shared_ptr<SmartListNode<T>> node = current;
+        while(node && ((step--) > 0))
+            node = node->next;
+        return SmartListIterator(node);
+    }
+
+    bool operator==(const SmartListIterator& other) const 
+    {
+        return current == other.current;
+    }
+
     bool operator!=(const SmartListIterator& other) const 
     {
         return current != other.current;
@@ -155,6 +170,32 @@ public:
     SmartListIterator<T> end()
     {
         return SmartListIterator<T>(nullptr);
+    }
+
+    void erase(SmartListIterator<T> start, SmartListIterator<T> stop)
+    {
+        if(start == stop)
+            return;
+
+        SmartListIterator<T> it = start;
+        while(it != stop)
+        {
+            assert(it != end());
+            size--;
+            ++it;
+        }
+
+        if(start.getNode() == head)
+            head = stop.getNode();
+
+        std::shared_ptr<SmartListNode<T>> last_left_node = start.getNode()->prev.lock();
+        if(stop == end())
+            tail = last_left_node;
+
+        if(last_left_node)
+            last_left_node->next = stop.getNode();
+        if(stop != end())
+            stop.getNode()->prev = start.getNode()->prev;
     }
 };
 
