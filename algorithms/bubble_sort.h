@@ -4,6 +4,7 @@
 #define SPECIAL_BUBBLE_SORT
 
 #include <utility>
+#include <cassert>
 
 class BubbleSorter
 {
@@ -11,6 +12,8 @@ public:
     template <typename RandomIt, typename CompFunc>
     static void sort(RandomIt first, RandomIt last, CompFunc compare)
     {
+        assert(first < last);
+
         --last;
         bool were_swapped = false;
         do
