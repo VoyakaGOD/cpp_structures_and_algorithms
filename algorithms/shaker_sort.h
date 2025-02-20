@@ -1,11 +1,11 @@
-// Implementation of bubble sorting algorithm
+// Implementation of cocktail shaker sorting algorithm
 
-#ifndef SPECIAL_BUBBLE_SORT
-#define SPECIAL_BUBBLE_SORT
+#ifndef SPECIAL_SHAKER_SORT
+#define SPECIAL_SHAKER_SORT
 
 #include <utility>
 
-class BubbleSorter
+class ShakerSorter
 {
 public:
     template <typename RandomIt, typename CompFunc>
@@ -26,9 +26,24 @@ public:
                 }
             }
             --last;
+
+            if(!were_swapped)
+                return;
+
+            were_swapped = false;
+            for(RandomIt it = last; it != first; --it)
+            {
+                RandomIt next = it - 1;
+                if(compare(*next, *it))
+                {
+                    std::swap(*it, *next);
+                    were_swapped = true;
+                }
+            }
+            ++first;
         }
         while (were_swapped);
     }
 };
 
-#endif //SPECIAL_BUBBLE_SORT
+#endif //SPECIAL_SHAKER_SORT

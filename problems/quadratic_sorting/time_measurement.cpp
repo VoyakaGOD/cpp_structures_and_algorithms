@@ -14,7 +14,7 @@ int main()
     for(int item : arr)
         std::cout << item << ", ";
     std::cout << std::endl;
-    BubbleSorter::sort(arr,
+    ShakerSorter::sort(arr,
         arr + sizeof(arr) / sizeof(int),
         [](int left, int right) { return left > right; });
 
