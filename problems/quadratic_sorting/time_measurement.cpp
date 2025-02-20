@@ -4,14 +4,12 @@
 #include <ctime>
 #include <array>
 
-#define N 100
-
 int main()
 {
     srand(time(0));
 
-    std::array<int, N> arr;
-    RandomArray::fill(&arr[0], N, OrderedIntGenerator(0, 10), 0.5f);
+    std::array<int, 100> arr;
+    RandomArray::fill(arr.begin(), arr.end(), OrderedIntGenerator(0, 10), 0.5f);
     for(int item : arr)
         std::cout << item << ", ";
     std::cout << std::endl;

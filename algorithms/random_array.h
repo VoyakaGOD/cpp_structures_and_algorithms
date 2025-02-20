@@ -21,18 +21,20 @@ public:
 class RandomArray
 {
 public:
-    template <typename T, typename OrderedGenerator>
-    static void fill(T *array, size_t size, OrderedGenerator gen, float orderliness = 0)
+    template <typename RandomIt, typename OrderedGenerator>
+    static void fill(RandomIt first, RandomIt last, OrderedGenerator gen, float orderliness = 0)
     {
         assert(orderliness >= 0);
         assert(orderliness <= 1);
+        assert(first < last);
 
-        for(int i = 0; i < size; i++)
-            array[i] = gen();
-
+        for(RandomIt it = first; it < last; ++it)
+            *it = gen();
+        
+        size_t size = last - first;
         size_t swaps_count = static_cast<size_t>(size * (1 - orderliness));
         while((swaps_count--) > 0)
-            std::swap(array[std::rand() % size], array[std::rand() % size]);
+            std::swap(first[std::rand() % size], first[std::rand() % size]);
     }
 };
 
