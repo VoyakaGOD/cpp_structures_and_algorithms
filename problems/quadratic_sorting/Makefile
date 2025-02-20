@@ -1,6 +1,6 @@
 CXX = g++
 
-SRC = time_measurement.cpp
+SRC = time_measurement.cpp ../../algorithms/random_array.cpp
 OUT = time_measurement.exe
 INCLUDE = ../../algorithms
 

@@ -12,22 +12,22 @@ public:
     static void sort(RandomIt firts, RandomIt last, CompFunc compare)
     {
         --last;
-        bool wereSwapped = false;
+        bool were_swapped = false;
         do
         {
-            wereSwapped = false;
+            were_swapped = false;
             for(RandomIt it = firts; it != last; ++it)
             {
                 RandomIt next = it + 1;
                 if(compare(*it, *next))
                 {
                     std::swap(*it, *next);
-                    wereSwapped = true;
+                    were_swapped = true;
                 }
             }
             --last;
         }
-        while (wereSwapped);
+        while (were_swapped);
     }
 };
 
