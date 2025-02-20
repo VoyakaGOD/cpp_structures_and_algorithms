@@ -7,3 +7,11 @@ There are also solutions to several problems using these structures and algorith
 # Implemented structures:
 
 - double linked list via smart pointers
+
+# Implemented algorithms:
+
+- bubble sort
+
+- shaker sort
+
+- comb sort
