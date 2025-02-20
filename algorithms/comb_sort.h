@@ -6,20 +6,22 @@
 #include <utility>
 #include <cassert>
 
+#define SHRINK_FACTOR 1.25f
+
 class CombSorter
 {
 public:
     template <typename RandomIt, typename CompFunc>
-    static void sort(RandomIt first, RandomIt last, CompFunc compare, float shrink_factor = 1.25f)
+    static void sort(RandomIt first, RandomIt last, CompFunc compare)
     {
         assert(first < last);
-        assert(shrink_factor > 1.0f);
+        assert(SHRINK_FACTOR > 1.0f);
 
         bool were_swapped = false;
         size_t step = (last - first) - 1;
         while((step > 1) || were_swapped)
         {
-            step = static_cast<size_t>(step / shrink_factor);
+            step = static_cast<size_t>(step / SHRINK_FACTOR);
             if(step < 1) 
                 step = 1;
             were_swapped = false;
