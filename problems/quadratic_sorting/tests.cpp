@@ -6,15 +6,16 @@
 #include <ctime>
 
 // alg_name N orderliness
-int main(int argc, char *argv[])
+int main()
 {
-    if(argc < 4)
-        throw std::runtime_error("There are should be 3 arguments at least.");
-    std::string alg(argv[1]);
-    int N = std::atoi(argv[2]);
+    std::string alg;
+    std::cin >> alg;
+    int N = 0;
+    std::cin >> N;
     if(N <= 0)
         throw std::runtime_error("N should be greater than 0.");
-    float orderliness = std::atof(argv[3]);
+    float orderliness;
+    std::cin >> orderliness;
 
     srand(time(0));
     std::vector<int> array(N);
