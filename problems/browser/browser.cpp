@@ -20,7 +20,7 @@ Output:
     google.com
 */
 
-#include "smart_list.h"
+#include <smart_list.h>
 #include <stdexcept>
 #include <iostream>
 #include <string>

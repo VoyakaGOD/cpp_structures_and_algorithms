@@ -4,7 +4,7 @@ Converts input unix path into canonical form:
     /home/./Downloads/Films/../Stories/     -> /home/Downloads/Stories
 */ 
 
-#include "smart_list.h"
+#include <smart_list.h>
 #include <stdexcept>
 #include <iostream>
 #include <string>
@@ -91,5 +91,4 @@ int main()
     {
         std::cerr << e.what() << std::endl;
     }
-    
 }
