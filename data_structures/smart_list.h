@@ -57,7 +57,7 @@ public:
     }
 };
 
-template <typename T, typename SizeType = uint64_t>
+template <typename T, typename SizeType = size_t>
 class SmartList
 {
 protected:

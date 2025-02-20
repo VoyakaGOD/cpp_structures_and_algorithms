@@ -1,8 +1,8 @@
 #include <random_array.h>
+#include <cushy_vector.h>
 #include <sorting.h>
 #include <algorithm>
 #include <iostream>
-#include <vector>
 #include <ctime>
 
 // alg_name N orderliness
@@ -18,9 +18,9 @@ int main()
     std::cin >> orderliness;
 
     srand(time(0));
-    std::vector<int> array(N);
+    CushyVector<int> array = CushyVector<int>(N);
     RandomArray::fill(array.begin(), array.end(), OrderedIntGenerator(0, 10), orderliness);
-    auto arr_clone = array;
+    CushyVector<int> arr_clone = array;
 
     auto comp_func = [](int left, int right) { return left > right; };
     auto predicate = [comp_func](int left, int right) { return !comp_func(left, right); };

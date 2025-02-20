@@ -1,7 +1,7 @@
 #include <random_array.h>
+#include <cushy_vector.h>
 #include <sorting.h>
 #include <iostream>
-#include <vector>
 #include <chrono>
 #include <ctime>
 
@@ -10,7 +10,7 @@ auto comp_func = [](int left, int right) { return left > right; };
 template <typename Func>
 double measure(Func sort, int N, float orderliness)
 {
-    std::vector<int> array(N);
+    CushyVector<int> array = CushyVector<int>(N);
     RandomArray::fill(array.begin(), array.end(), OrderedIntGenerator(0, 10), orderliness);
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -39,12 +39,9 @@ int main(int argc, char *argv[])
 
     for(int i = 0; i < count; i++)
     {
-        bubble_time += measure(BubbleSorter::sort<std::vector<int>::iterator, decltype(comp_func)>, 
-            N, orderliness);
-        shaker_time += measure(ShakerSorter::sort<std::vector<int>::iterator, decltype(comp_func)>, 
-            N, orderliness);
-        comb_time += measure(CombSorter::sort<std::vector<int>::iterator, decltype(comp_func)>, 
-            N, orderliness);
+        bubble_time += measure(BubbleSorter::sort<int *, decltype(comp_func)>, N, orderliness);
+        shaker_time += measure(ShakerSorter::sort<int *, decltype(comp_func)>, N, orderliness);
+        comb_time += measure(CombSorter::sort<int *, decltype(comp_func)>, N, orderliness);
     }
 
     std::cout << (bubble_time / count) << std::endl;
