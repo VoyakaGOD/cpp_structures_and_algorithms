@@ -15,5 +15,5 @@ build:
 tests:
 	python tests.py $(TESTS_OUT)
 
-benchmark: build
+benchmarks: build
 	python benchmarks.py $(BENCHMARKS_OUT)

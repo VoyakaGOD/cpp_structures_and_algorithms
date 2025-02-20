@@ -10,22 +10,55 @@ def get_times(N, orderliness, count):
                             capture_output=True, text=True).stdout.split("\n")
     return float(output[0]), float(output[1]), float(output[2])
 
-Ns = []
-bubble_measurements = []
-shaker_measurements = []
-comb_measurements = []
-for N in range(300, 3000, 500):
-    times = get_times(N, 0.5, COUNT_OF_MEASUREMENTS)
-    Ns += [N]
-    bubble_measurements += [times[0]]
-    shaker_measurements += [times[1]]
-    comb_measurements += [times[2]]
+def get_benchmark_of_N(orderliness):
+    Ns = []
+    bubble_measurements = []
+    shaker_measurements = []
+    comb_measurements = []
+    for N in range(300, 10000, 1000):
+        times = get_times(N, 0.5, COUNT_OF_MEASUREMENTS)
+        Ns += [N]
+        bubble_measurements += [times[0]]
+        shaker_measurements += [times[1]]
+        comb_measurements += [times[2]]
+    plt.plot(Ns, bubble_measurements, label="bubble")
+    plt.plot(Ns, shaker_measurements, label="shaker")
+    plt.plot(Ns, comb_measurements, label="comb")
+    plt.xlabel("N")
+    plt.ylabel("time, s")
+    plt.title(f"orderliness = {int(100 * orderliness)}%")
+    plt.legend()
+    plt.savefig(f"benchmarks/No{int(100 * orderliness)}.png")
+    plt.clf()
+
+def get_benchmark_of_orderliness(N):
+    os = []
+    bubble_measurements = []
+    shaker_measurements = []
+    comb_measurements = []
+    for o in range(0, 100, 10):
+        times = get_times(N, o / 100, COUNT_OF_MEASUREMENTS)
+        os += [o]
+        bubble_measurements += [times[0]]
+        shaker_measurements += [times[1]]
+        comb_measurements += [times[2]]
+    plt.plot(os, bubble_measurements, label="bubble")
+    plt.plot(os, shaker_measurements, label="shaker")
+    plt.plot(os, comb_measurements, label="comb")
+    plt.xlabel("orderliness, %")
+    plt.ylabel("time, s")
+    plt.title(f"N = {N}")
+    plt.legend()
+    plt.savefig(f"benchmarks/N{N}o.png")
+    plt.clf()
 
 os.makedirs("benchmarks", exist_ok=True)
-plt.plot(Ns, bubble_measurements, label="bubble")
-plt.plot(Ns, shaker_measurements, label="shaker")
-plt.plot(Ns, comb_measurements, label="comb")
-plt.xlabel("N")
-plt.ylabel("time, s")
-plt.legend()
-plt.savefig("benchmarks/No5.png")
+get_benchmark_of_N(0)
+get_benchmark_of_N(0.2)
+get_benchmark_of_N(0.4)
+get_benchmark_of_N(0.6)
+get_benchmark_of_N(0.8)
+get_benchmark_of_N(0.95)
+get_benchmark_of_orderliness(3000)
+get_benchmark_of_orderliness(5000)
+get_benchmark_of_orderliness(7000)
