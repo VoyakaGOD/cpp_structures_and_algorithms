@@ -20,7 +20,7 @@ int main()
     srand(time(0));
     CushyVector<int> array = CushyVector<int>(N);
     RandomArray::fill(array.begin(), array.end(), OrderedIntGenerator(0, 10), orderliness);
-    CushyVector<int> arr_clone = array;
+    CushyVector<int> array_clone = array;
 
     auto comp_func = [](int left, int right) { return left > right; };
     auto predicate = [comp_func](int left, int right) { return !comp_func(left, right); };
@@ -32,6 +32,6 @@ int main()
         CombSorter::sort(array.begin(), array.end(), comp_func);
     else
         throw std::runtime_error("Algorithm[" + alg + "] is not supported.");
-    std::sort(arr_clone.begin(), arr_clone.end(), predicate);
-    std::cout << ((array == arr_clone) ? "V" : "X") << std::endl;
+    std::sort(array_clone.begin(), array_clone.end(), predicate);
+    std::cout << ((array == array_clone) ? "V" : "X") << std::endl;
 }

@@ -9,12 +9,20 @@
 #include <iterator>
 #include <cmath>
 
-#define RADIX_SORT_BASE 10
+#define RADIX_SORT_BASE 10u
 
 template <typename UnsignedIntegerType>
 uint8_t getDigit(UnsignedIntegerType *number, size_t digit_index)
 {
-    return (*number / static_cast<UnsignedIntegerType>(std::pow(RADIX_SORT_BASE, digit_index))) % RADIX_SORT_BASE;
+    static unsigned long long pow10[] = 
+    {
+        1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000,
+        1000000000, 10000000000, 100000000000, 1000000000000, 10000000000000,
+        100000000000000, 1000000000000000, 10000000000000000, 100000000000000000,
+        1000000000000000000, 10000000000000000000
+    };
+
+    return (*number / pow10[digit_index]) % RADIX_SORT_BASE;
 }
 
 class RadixSorter
@@ -30,11 +38,10 @@ private:
         for(int i = 1; i < RADIX_SORT_BASE; i++)
             count[i] += count[i - 1];
 
-        for(RandomIt it = src_last - 1; it >= src_first; --it) 
+        for(RandomIt it = src_last - 1; it >= src_first; --it)
         {
             int digit = getDigit(it, digitIndex);
-            dst[count[digit] - 1] = std::move(*it);
-            count[digit]--;
+            dst[--count[digit]] = std::move(*it);
         }
     }
 
