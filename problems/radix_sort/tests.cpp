@@ -22,7 +22,8 @@ int main()
     RandomArray::fill(array.begin(), array.end(), OrderedIntGenerator(0, 10), orderliness);
     CushyVector<uint32_t> array_clone = array;
 
-    auto predicate = [](uint32_t left, uint32_t right) { return left <= right; };
+    // strict order required
+    auto predicate = [](uint32_t left, uint32_t right) { return left < right; };
     RadixSorter::sort(array.begin(), array.end(), getDigit<uint32_t>, DIGITS_COUNT);
     std::sort(array_clone.begin(), array_clone.end(), predicate);
     std::cout << ((array == array_clone) ? "V" : "X") << std::endl;

@@ -23,7 +23,7 @@ int main()
     CushyVector<int> array_clone = array;
 
     auto comp_func = [](int left, int right) { return left > right; };
-    auto predicate = [comp_func](int left, int right) { return !comp_func(left, right); };
+    auto predicate = [](int left, int right) { return left < right; }; // strict order required
     if(alg == "bubble")
         BubbleSorter::sort(array.begin(), array.end(), comp_func);
     else if(alg == "shaker")
