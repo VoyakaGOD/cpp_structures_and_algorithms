@@ -20,6 +20,7 @@ public:
     const T *begin() const { return data; }
     const T *end() const { return data + size; }
     SizeType getSize() const { return size; }
+    T& operator[](SizeType index) { return data[index]; }
 
     CushyVector &operator=(const CushyVector &original)
     {
