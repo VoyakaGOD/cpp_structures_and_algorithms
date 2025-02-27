@@ -21,14 +21,20 @@ public:
 template <typename T>
 class SmartListIterator
 {
+public:
+    using value_type = T;
+    using pointer = T*;
+    using reference = T&;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using difference_type = void;
+
 private:
     std::shared_ptr<SmartListNode<T>> current;
 
 public:
     SmartListIterator(std::shared_ptr<SmartListNode<T>> node) : current(node) {}
-
     T& operator*() { return current->value; }
-
+    T* operator->() { return current->value; }
     std::shared_ptr<SmartListNode<T>> getNode() { return current; }
 
     SmartListIterator& operator++() 
@@ -36,6 +42,27 @@ public:
         if(current)
             current = current->next;
         return *this;
+    }
+
+    SmartListIterator operator++(int)
+    {
+        SmartListIterator old(*this);
+        ++(*this);
+        return old;
+    }
+
+    SmartListIterator& operator--()
+    {
+        if(current)
+            current = current->prev.lock();
+        return *this;
+    }
+
+    SmartListIterator operator--(int)
+    {
+        SmartListIterator old(*this);
+        --(*this);
+        return old;
     }
 
     SmartListIterator operator+(size_t step) const
