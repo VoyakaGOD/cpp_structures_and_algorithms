@@ -7,12 +7,11 @@
 #include <utility>
 #include <cassert>
 #include <iterator>
-#include <cmath>
 
 #define RADIX_SORT_BASE 10u
 
 template <typename UnsignedIntegerType>
-uint8_t getDigit(UnsignedIntegerType *number, size_t digit_index)
+uint8_t getDigit(UnsignedIntegerType number, size_t digit_index)
 {
     static unsigned long long pow10[] = 
     {
@@ -22,25 +21,25 @@ uint8_t getDigit(UnsignedIntegerType *number, size_t digit_index)
         1000000000000000000, 10000000000000000000ull
     };
 
-    return (*number / pow10[digit_index]) % RADIX_SORT_BASE;
+    return (number / pow10[digit_index]) % RADIX_SORT_BASE;
 }
 
 class RadixSorter
 {
 private:
-    template <typename RandomIt, typename DigitExtractor>
-    static void countingSort(RandomIt src_first, RandomIt src_last, RandomIt dst, DigitExtractor getDigit, size_t digitIndex)
+    template <typename RandomIt, typename AnotherRandomIt, typename DigitExtractor>
+    static void countingSort(RandomIt src_first, RandomIt src_last, AnotherRandomIt dst, DigitExtractor getDigit, size_t digitIndex)
     {
         size_t count[RADIX_SORT_BASE] = {};
         for(RandomIt it = src_first; it < src_last; ++it)
-            count[getDigit(it, digitIndex)]++;
+            count[getDigit(*it, digitIndex)]++;
 
-        for(int i = 1; i < RADIX_SORT_BASE; i++)
+        for(unsigned int i = 1; i < RADIX_SORT_BASE; i++)
             count[i] += count[i - 1];
 
         for(RandomIt it = src_last - 1; it >= src_first; --it)
         {
-            int digit = getDigit(it, digitIndex);
+            uint8_t digit = getDigit(*it, digitIndex);
             dst[--count[digit]] = std::move(*it);
         }
     }

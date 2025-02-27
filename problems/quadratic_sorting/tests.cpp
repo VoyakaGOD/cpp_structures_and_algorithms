@@ -18,7 +18,7 @@ int main()
     std::cin >> orderliness;
 
     srand(time(0));
-    CushyVector<int> array = CushyVector<int>(N);
+    CushyVector<int> array(N);
     RandomArray::fill(array.begin(), array.end(), OrderedIntGenerator(0, 10), orderliness);
     CushyVector<int> array_clone = array;
 
@@ -34,4 +34,10 @@ int main()
         throw std::runtime_error("Algorithm[" + alg + "] is not supported.");
     std::sort(array_clone.begin(), array_clone.end(), predicate);
     std::cout << ((array == array_clone) ? "V" : "X") << std::endl;
+
+    if(array != array_clone)
+    {
+        for(int i = 0; i < N; i++)
+            std::cout << array[i] << ", ";
+    }
 }
