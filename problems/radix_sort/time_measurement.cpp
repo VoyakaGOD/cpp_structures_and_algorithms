@@ -6,11 +6,10 @@
 #include <chrono>
 #include <ctime>
 
-#define DIGITS_COUNT 4
-
+size_t digits_count = 0;
 void radixSort(uint32_t *first, uint32_t *last)
 {
-    RadixSorter::sort(first, last, getDigit<uint32_t>, DIGITS_COUNT);
+    RadixSorter::sort(first, last, getDigit<uint32_t>, digits_count);
 }
 
 void stdSort(uint32_t *first, uint32_t *last)
@@ -26,7 +25,7 @@ double measure(Func sort, int N, float orderliness, int count)
     for(auto &array : arrays)
     {
         array = new CushyVector<uint32_t>(N);
-        RandomArray::fill(array->begin(), array->end(), OrderedIntGenerator(0, 10), orderliness);
+        RandomArray::fill(array->begin(), array->end(), UnorderedIntGenerator(0, pow10[digits_count]), orderliness);
     }
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -40,11 +39,11 @@ double measure(Func sort, int N, float orderliness, int count)
     return static_cast<std::chrono::duration<double>>(end - start).count() / count;
 }
 
-// N orderliness count
+// N orderliness count digits
 int main(int argc, char *argv[])
 {
-    if(argc < 4)
-        throw std::runtime_error("There are should be 3 arguments at least.");
+    if(argc < 5)
+        throw std::runtime_error("There are should be 4 arguments at least.");
     int N = std::atoi(argv[1]);
     if(N <= 0)
         throw std::runtime_error("N should be greater than 0.");
@@ -52,6 +51,9 @@ int main(int argc, char *argv[])
     int count = std::atoi(argv[3]);
     if(count <= 0)
         throw std::runtime_error("count of measurements should be greater than 0.");
+    digits_count = std::atoi(argv[4]);
+    if(digits_count <= 0)
+        throw std::runtime_error("count of digits should be greater than 0.");
 
     srand(time(0));
     std::cout << measure(radixSort, N, orderliness, count) << std::endl;

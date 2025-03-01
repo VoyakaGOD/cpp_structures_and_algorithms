@@ -5,18 +5,42 @@
 #include <chrono>
 #include <ctime>
 
-auto comp_func = [](int left, int right) { return left > right; };
+auto cmp = [](int left, int right) { return left > right; };
+
+void bubbleSort(int *first, int *last)
+{
+    BubbleSorter::sort(first, last, cmp);
+}
+
+void shakerSort(int *first, int *last)
+{
+    ShakerSorter::sort(first, last, cmp);
+}
+
+void combSort(int *first, int *last)
+{
+    CombSorter::sort(first, last, cmp);
+}
 
 template <typename Func>
-double measure(Func sort, int N, float orderliness)
+double measure(Func sort, int N, float orderliness, int count)
 {
-    CushyVector<int> array = CushyVector<int>(N);
-    RandomArray::fill(array.begin(), array.end(), OrderedIntGenerator(0, 10), orderliness);
+    CushyVector<CushyVector<int> *> arrays(count);
+    for(auto &array : arrays)
+    {
+        array = new CushyVector<int>(N);
+        RandomArray::fill(array->begin(), array->end(), OrderedIntGenerator(0, 10), orderliness);
+    }
 
     auto start = std::chrono::high_resolution_clock::now();
-    sort(array.begin(), array.end(), comp_func);
+    for(auto array : arrays)
+        sort(array->begin(), array->end());
     auto end = std::chrono::high_resolution_clock::now();
-    return static_cast<std::chrono::duration<double>>(end - start).count();
+
+    for(auto array : arrays)
+        delete array;
+
+    return static_cast<std::chrono::duration<double>>(end - start).count() / count;
 }
 
 // N orderliness count
@@ -33,18 +57,7 @@ int main(int argc, char *argv[])
         throw std::runtime_error("count of measurements should be greater than 0.");
 
     srand(time(0));
-    double bubble_time = 0;
-    double shaker_time = 0;
-    double comb_time = 0;
-
-    for(int i = 0; i < count; i++)
-    {
-        bubble_time += measure(BubbleSorter::sort<int *, decltype(comp_func)>, N, orderliness);
-        shaker_time += measure(ShakerSorter::sort<int *, decltype(comp_func)>, N, orderliness);
-        comb_time += measure(CombSorter::sort<int *, decltype(comp_func)>, N, orderliness);
-    }
-
-    std::cout << (bubble_time / count) << std::endl;
-    std::cout << (shaker_time / count) << std::endl;
-    std::cout << (comb_time / count) << std::endl;
+    std::cout << measure(bubbleSort, N, orderliness, count) << std::endl;
+    std::cout << measure(shakerSort, N, orderliness, count) << std::endl;
+    std::cout << measure(combSort, N, orderliness, count) << std::endl;
 }

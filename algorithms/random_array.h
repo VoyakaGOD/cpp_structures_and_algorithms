@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <utility>
 #include <cassert>
+#include <algorithm>
 
 class OrderedIntGenerator
 {
@@ -16,13 +17,27 @@ private:
 public:
     OrderedIntGenerator(int start, int step);
     int operator()();
+    bool isOrdered();
+};
+
+class UnorderedIntGenerator
+{
+private:
+    int value;
+    int min;
+    int max;
+
+public:
+    UnorderedIntGenerator(int min, int max);
+    int operator()();
+    bool isOrdered();
 };
 
 class RandomArray
 {
 public:
-    template <typename RandomIt, typename OrderedGenerator>
-    static void fill(RandomIt first, RandomIt last, OrderedGenerator gen, float orderliness = 0)
+    template <typename RandomIt, typename Generator>
+    static void fill(RandomIt first, RandomIt last, Generator gen, float orderliness = 0)
     {
         assert(orderliness >= 0);
         assert(orderliness <= 1);
@@ -30,6 +45,9 @@ public:
 
         for(RandomIt it = first; it < last; ++it)
             *it = gen();
+
+        if(!gen.isOrdered())
+            std::sort(first, last);
         
         size_t size = last - first;
         size_t swaps_count = static_cast<size_t>(size * (1 - orderliness));

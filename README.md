@@ -17,3 +17,7 @@ There are also solutions to several problems using these structures and algorith
 - comb sort
 
 - radix sort
+
+# Benchmarks:
+
+![std_vs_radix](problems/radix_sort/benchmarks/N1000000o33d.png)
