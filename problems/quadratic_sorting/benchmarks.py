@@ -12,18 +12,22 @@ def get_times(N, orderliness, count):
                             capture_output=True, text=True).stdout.split("\n")
     return float(output[0]), float(output[1]), float(output[2])
 
-def get_benchmark_of_N(orderliness):
+def get_benchmark_of_N(orderliness, mc = 1):
     Ns = []
     bubble_measurements = []
     shaker_measurements = []
     comb_measurements = []
     for pN in range(1, 6):
         N = 10 ** pN
-        times = get_times(N, orderliness, COUNT_OF_MEASUREMENTS / N)
+        if N == 10:
+            times = get_times(N, orderliness, 10 * COUNT_OF_MEASUREMENTS / N)
+        else:
+            times = get_times(N, orderliness, mc * COUNT_OF_MEASUREMENTS / N)
         Ns += [N]
         bubble_measurements += [times[0]]
         shaker_measurements += [times[1]]
         comb_measurements += [times[2]]
+        print("\r", N, sep="", end="")
     plt.plot(Ns, bubble_measurements, label="bubble")
     plt.plot(Ns, shaker_measurements, label="shaker")
     plt.plot(Ns, comb_measurements, label="comb")
@@ -34,7 +38,7 @@ def get_benchmark_of_N(orderliness):
     plt.title(f"orderliness = {int(100 * orderliness)}%")
     plt.legend()
     plt.savefig(f"benchmarks/No{int(100 * orderliness)}.png")
-    print(f"benchmarks/No{int(100 * orderliness)}.png")
+    print(f"\rbenchmarks/No{int(100 * orderliness)}.png")
     plt.clf()
 
 def get_benchmark_of_orderliness(N, mc):
@@ -61,12 +65,12 @@ def get_benchmark_of_orderliness(N, mc):
     plt.clf()
 
 os.makedirs("benchmarks", exist_ok=True)
-# get_benchmark_of_N(0)
-# get_benchmark_of_N(0.2)
-# get_benchmark_of_N(0.4)
-# get_benchmark_of_N(0.6)
-# get_benchmark_of_N(0.8)
-# get_benchmark_of_N(.97)
+get_benchmark_of_N(0)
+get_benchmark_of_N(0.2)
+get_benchmark_of_N(0.4)
+get_benchmark_of_N(0.6)
+get_benchmark_of_N(0.8)
+get_benchmark_of_N(1.0, 100)
 # get_benchmark_of_orderliness(100, 10000)
 # get_benchmark_of_orderliness(1000, 100)
 # get_benchmark_of_orderliness(10000, 1)
