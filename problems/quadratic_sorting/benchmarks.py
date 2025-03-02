@@ -46,7 +46,7 @@ def get_benchmark_of_orderliness(N, mc):
     bubble_measurements = []
     shaker_measurements = []
     comb_measurements = []
-    for o in range(0, 101, 10):
+    for o in range(0, 101, 2):
         times = get_times(N, o / 100, (mc * 100) if (o == 100) else mc)
         os += [o]
         bubble_measurements += [times[0]]
@@ -66,12 +66,12 @@ def get_benchmark_of_orderliness(N, mc):
     plt.clf()
 
 os.makedirs("benchmarks", exist_ok=True)
-# get_benchmark_of_N(0)
-# get_benchmark_of_N(0.2)
-# get_benchmark_of_N(0.4)
-# get_benchmark_of_N(0.6)
-# get_benchmark_of_N(0.8)
-# get_benchmark_of_N(1.0, 100)
+get_benchmark_of_N(0)
+get_benchmark_of_N(0.2)
+get_benchmark_of_N(0.4)
+get_benchmark_of_N(0.6)
+get_benchmark_of_N(0.8)
+get_benchmark_of_N(1.0, 100)
 get_benchmark_of_orderliness(100, 10000)
 get_benchmark_of_orderliness(1000, 100)
-get_benchmark_of_orderliness(10000, 1)
+get_benchmark_of_orderliness(10000, 20)
