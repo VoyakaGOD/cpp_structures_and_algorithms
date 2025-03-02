@@ -15,17 +15,16 @@ public:
     static void sort(RandomIt first, RandomIt last, CompFunc compare)
     {
         assert(first < last);
-        assert(SHRINK_FACTOR > 1.0f);
 
         bool were_swapped = false;
-        size_t step = (last - first) - 1;
+        size_t step = last - first;
         while((step > 1) || were_swapped)
         {
             step = static_cast<size_t>(step / SHRINK_FACTOR);
             if(step < 1) 
                 step = 1;
             were_swapped = false;
-            for(RandomIt it = first; (it + step) < last; it += step)
+            for(RandomIt it = first; (it + step) < last; ++it)
             {
                 RandomIt next = it + step;
                 if(compare(*it, *next))
