@@ -7,25 +7,25 @@
 #include <ctime>
 
 size_t digits_count = 0;
-void radixSort(uint32_t *first, uint32_t *last)
+void radixSort(uint64_t *first, uint64_t *last)
 {
-    RadixSorter::sort(first, last, getDigit<uint32_t>, digits_count);
+    RadixSorter::sort(first, last, getDigit<uint64_t>, digits_count);
 }
 
-void stdSort(uint32_t *first, uint32_t *last)
+void stdSort(uint64_t *first, uint64_t *last)
 {
     // strict order required
-    std::sort(first, last, [](uint32_t left, uint32_t right) { return left < right; });
+    std::sort(first, last, [](uint64_t left, uint64_t right) { return left < right; });
 }
 
 template <typename Func>
 double measure(Func sort, int N, float orderliness, int count)
 {
-    CushyVector<CushyVector<uint32_t> *> arrays(count);
+    CushyVector<CushyVector<uint64_t> *> arrays(count);
     for(auto &array : arrays)
     {
-        array = new CushyVector<uint32_t>(N);
-        RandomArray::fill(array->begin(), array->end(), UnorderedIntGenerator(0, pow10[digits_count]), orderliness);
+        array = new CushyVector<uint64_t>(N);
+        RandomArray::fill(array->begin(), array->end(), UnorderedULLGenerator(0, pow10[digits_count]), orderliness);
     }
 
     auto start = std::chrono::high_resolution_clock::now();

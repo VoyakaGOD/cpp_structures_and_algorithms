@@ -32,3 +32,20 @@ int UnorderedIntGenerator::operator()()
 }
 
 bool UnorderedIntGenerator::isOrdered() { return false; }
+
+UnorderedULLGenerator::UnorderedULLGenerator(uint64_t min, uint64_t max)
+{
+    assert(min < max);
+
+    this->min = min;
+    this->max = max;
+    this->value = min;
+}
+
+uint64_t UnorderedULLGenerator::operator()()
+{
+    value = min + (rand() % (max - min));
+    return value;
+}
+
+bool UnorderedULLGenerator::isOrdered() { return false; }

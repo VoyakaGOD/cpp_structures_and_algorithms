@@ -5,7 +5,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import os
 
-COUNT_OF_MEASUREMENTS_FACTOR = int(5e6)
+COUNT_OF_MEASUREMENTS_FACTOR = int(2e7)
 
 def get_times(N, orderliness, count, digits):
     output = subprocess.run([argv[1], str(N), str(orderliness), str(count), str(digits)], 
@@ -38,11 +38,12 @@ def get_benchmark_of_DC(orderliness, N):
     ds = []
     radix_measurements = []
     std_measurements = []
-    for d in range(1, 10):
+    for d in range(1, 15):
         times = get_times(N, orderliness, COUNT_OF_MEASUREMENTS_FACTOR / N, d)
         ds += [d]
         radix_measurements += [times[0]]
         std_measurements += [times[1]]
+        print(f"\r{d} / 14", sep="", end="")
     plt.plot(ds, radix_measurements, label="radix")
     plt.plot(ds, std_measurements, label="std::sort")
     plt.xlabel("digits count")
@@ -50,7 +51,7 @@ def get_benchmark_of_DC(orderliness, N):
     plt.title(f"orderliness = {int(100 * orderliness)}%, N = {N}")
     plt.legend()
     plt.savefig(f"benchmarks/N{N}o{int(100 * orderliness)}d.png")
-    print(f"benchmarks/N{N}o{int(100 * orderliness)}d.png")
+    print(f"\rbenchmarks/N{N}o{int(100 * orderliness)}d.png")
     plt.clf()
 
 def get_benchmark_of_orderliness(N, digits):

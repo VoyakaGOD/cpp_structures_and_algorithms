@@ -7,6 +7,7 @@
 #include <utility>
 #include <cassert>
 #include <algorithm>
+#include <stdint.h>
 
 class OrderedIntGenerator
 {
@@ -30,6 +31,19 @@ private:
 public:
     UnorderedIntGenerator(int min, int max);
     int operator()();
+    bool isOrdered();
+};
+
+class UnorderedULLGenerator
+{
+private:
+    uint64_t value;
+    uint64_t min;
+    uint64_t max;
+
+public:
+    UnorderedULLGenerator(uint64_t min, uint64_t max);
+    uint64_t operator()();
     bool isOrdered();
 };
 
