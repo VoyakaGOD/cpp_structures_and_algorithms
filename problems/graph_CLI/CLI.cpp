@@ -2,6 +2,13 @@
 #include <iostream>
 #include <sstream>
 
+class UnknownCommandException : public std::runtime_error
+{
+public:
+    explicit UnknownCommandException(const std::string &command) :
+        std::runtime_error("Unknown command[" + command + "]") {}
+};
+
 int main()
 {
     SleekGraph graph;
@@ -48,6 +55,10 @@ int main()
                     args >> to;
                     graph.removeEdge(from, to);
                 }
+                else
+                {
+                    throw UnknownCommandException(cmd);
+                }
             }
             else if(cmd == "RPO_NUMBERING")
             {
@@ -61,6 +72,14 @@ int main()
                 for(const auto &label : rpo)
                     std::cout << ' ' << label;
                 std::cout << std::endl;
+            }
+            else if(cmd == "q")
+            {
+                break;
+            }
+            else
+            {
+                throw UnknownCommandException(cmd);
             }
         }
         catch(const std::runtime_error& e)

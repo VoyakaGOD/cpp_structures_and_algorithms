@@ -238,7 +238,11 @@ public:
             stop.getNode()->prev = start.getNode()->prev;
     }
 
-    void erase(SmartListIterator<T> item) { erase(item, ++item); }
+    void erase(SmartListIterator<T> item)
+    {
+        SmartListIterator<T> old = item;
+        erase(old, ++item);
+    }
 
     template <typename PredicateType>
     SmartListIterator<T> find(PredicateType predicate)
