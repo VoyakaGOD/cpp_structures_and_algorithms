@@ -181,7 +181,7 @@ public:
                 if(already_visited)
                 {
                     if(loops && (edge->to = start_node))
-                        loops->pushBack(loop_t(edge->to->label, origin));
+                        loops->pushBack(loop_t(current->label, origin));
                     continue;
                 }
                 stack.pushBack(edge->to);
