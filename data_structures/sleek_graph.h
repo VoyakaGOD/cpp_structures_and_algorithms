@@ -150,9 +150,45 @@ public:
         removeEdgeByPointer(*edge_it);
     }
 
-    SmartList<label_t> traverseReversePostOrder(SmartList<loop_t> *loops = nullptr)
+    SmartList<label_t> traverseReversePostOrder(label_t origin, SmartList<loop_t> *loops = nullptr)
     {
-        
+        SmartList<label_t> result;
+        SmartList<Node*> visited;
+        SmartList<Node*> stack;
+
+        Node *start_node = getNode(origin);
+        if(!start_node)
+            throw UnknownGraphNodesException(origin);
+
+        stack.pushBack(start_node);
+        while(stack.getSize() != 0)
+        {
+            Node *current = stack.popBack();
+            visited.pushBack(current);
+            result.pushBack(current->label);
+
+            for (Edge *edge : current->outcoming_edges)
+            {
+                bool already_visited = false;
+                for(Node *visited_node : visited)
+                {
+                    if(visited_node == edge->to)
+                    {
+                        already_visited = true;
+                        break;
+                    }
+                }
+                if(already_visited)
+                {
+                    if(loops && (edge->to = start_node))
+                        loops->pushBack(loop_t(edge->to->label, origin));
+                    continue;
+                }
+                stack.pushBack(edge->to);
+            }
+        }
+
+        return result;
     }
 };
 
