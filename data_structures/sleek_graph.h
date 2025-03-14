@@ -18,9 +18,9 @@
 class UnknownGraphNodesException : public std::runtime_error 
 {
 public:
-    explicit UnknownGraphNodesException(SleekGraph::label_t &label) :
+    explicit UnknownGraphNodesException(const std::string &label) :
         std::runtime_error("Unknown node " + label) {}
-    explicit UnknownGraphNodesException(SleekGraph::label_t &label1, SleekGraph::label_t &label2) :
+    explicit UnknownGraphNodesException(const std::string &label1, const std::string &label2) :
         std::runtime_error("Unknown nodes " + label1 + " " + label2) {}
 };
 
