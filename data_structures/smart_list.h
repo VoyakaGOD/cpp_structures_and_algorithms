@@ -32,9 +32,10 @@ private:
     std::shared_ptr<SmartListNode<T>> current;
 
 public:
+    SmartListIterator() : current(nullptr) {}
     SmartListIterator(std::shared_ptr<SmartListNode<T>> node) : current(node) {}
     T& operator*() { return current->value; }
-    T* operator->() { return current->value; }
+    T* operator->() { return &current->value; }
     std::shared_ptr<SmartListNode<T>> getNode() { return current; }
 
     SmartListIterator& operator++() 
@@ -111,6 +112,13 @@ public:
             node = node->next.get();
 
         return node->value;
+    }
+
+    T &get(SmartListIterator<T> it)
+    {
+        assert(it != end());
+
+        return it.getNode()->value;
     }
 
     T& operator[](SizeType index) { return get(index); }
@@ -199,6 +207,11 @@ public:
         return SmartListIterator<T>(nullptr);
     }
 
+    SmartListIterator<T> getIteratorToLast()
+    {
+        return SmartListIterator<T>(tail);
+    }
+
     void erase(SmartListIterator<T> start, SmartListIterator<T> stop)
     {
         if(start == stop)
@@ -223,6 +236,21 @@ public:
             last_left_node->next = stop.getNode();
         if(stop != end())
             stop.getNode()->prev = start.getNode()->prev;
+    }
+
+    void erase(SmartListIterator<T> item) { erase(item, ++item); }
+
+    template <typename PredicateType>
+    SmartListIterator<T> find(PredicateType predicate)
+    {
+        SmartListIterator<T> it = begin();
+        while(it != end())
+        {
+            if(predicate(*it))
+                break;
+            ++it;
+        }
+        return it;
     }
 };
 
