@@ -4,9 +4,11 @@
 // addEdge = O(N)
 // removeNode = O(N + E)
 // removeEdge = O(N)
+// traverseReversePostOrder = O(?)
+// getShortestPathsFrom = O(N^2 + E)
 // edges uses iterators(anchors) of SmartLists for fast deletion
 // it works because this iterators uses shared pointers
-// and nodes delete accurately one by one
+// and nodes are removed accurately one by one with saving remaining structure
 
 #ifndef SLEEK_GRAPH
 #define SLEEK_GRAPH
@@ -30,15 +32,29 @@ public:
 class SleekGraph
 {
 public:
-    struct Edge;
     using label_t = const std::string;
     using loop_t = std::pair<label_t, label_t>;
+
+    struct Path
+    {
+        WeightType length;
+        SmartList<label_t> nodes;
+
+        Path(WeightType length) : length(length) {}
+    };
+
+private:
+    struct Edge;
 
     struct Node
     {
         label_t label;
         SmartList<Edge *> incoming_edges;
         SmartList<Edge *> outcoming_edges;
+
+        WeightType auxiliary_value;
+        Node *auxiliary_node;
+        bool is_marked;
 
         Node(label_t &label) : label(label) {}
     };
@@ -188,6 +204,66 @@ public:
             }
         }
 
+        return result;
+    }
+
+    SmartList<Path> getShortestPathsFrom(label_t &label, WeightType infinity)
+    {
+        SmartListIterator<Node> node_it = getNodeIt(label);
+        if(node_it == nodes.end())
+            throw UnknownGraphNodesException(label);
+        Node *start = static_cast<Node *>(node_it);
+
+        for(auto &node : nodes)
+        {
+            node.auxiliary_value = infinity;
+            node.auxiliary_node = nullptr;
+            node.is_marked = false;
+        }
+        start->auxiliary_value = 0;
+
+        for(size_t i = 0; i < nodes.getSize(); i++)
+        {
+            WeightType min_weight = infinity;
+            Node *min_node = nullptr;
+            for(auto &node : nodes)
+            {
+                if((!node.is_marked) && (node.auxiliary_value < min_weight))
+                {
+                    min_node = &node;
+                    min_weight = node.auxiliary_value;
+                }
+            }
+
+            min_node->is_marked = true;
+            for(auto &edge : min_node->outcoming_edges)
+            {
+                Node *next_node = edge->to;
+                if(next_node->auxiliary_value > (min_node->auxiliary_value + edge->weight))
+                {
+                    next_node->auxiliary_value = min_node->auxiliary_value + edge->weight;
+                    next_node->auxiliary_node = min_node;
+                }
+            }
+        }
+
+        start->auxiliary_node = nullptr;
+        SmartList<Path> result;
+        for(auto &node : nodes)
+        {
+            if(!node.auxiliary_node)
+                continue;
+
+            Node *node_ptr = &node;
+            Path path(node.auxiliary_value);
+            do
+            {
+                path.nodes.pushFront(node_ptr->label);
+                node_ptr = node_ptr->auxiliary_node;
+            }
+            while(node_ptr != start);
+            result.pushBack(path);
+        }
         return result;
     }
 };

@@ -83,6 +83,11 @@ public:
     {
         return current != other.current;
     }
+
+    explicit operator T*()
+    {
+        return &current->value;
+    }
 };
 
 template <typename T, typename SizeType = size_t>

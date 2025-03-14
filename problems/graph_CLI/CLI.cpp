@@ -75,6 +75,31 @@ int main()
                     std::cout << ' ' << label;
                 std::cout << std::endl;
             }
+            else if(cmd == "DIJKSTRA")
+            {
+                std::string label;
+                std::string extra;
+                args >> label;
+                args >> extra;
+                SmartList<SleekGraph::Path> paths = graph.getShortestPathsFrom(label, static_cast<size_t>(-1ll));
+                bool show_nodes = false;
+                if(extra == "NODES")
+                    show_nodes = true;
+                else if(extra != "")
+                    throw UnknownCommandException(extra);
+                for(auto &path : paths)
+                {
+                    std::cout << path.nodes.getBack() << ' ';
+                    std::cout << path.length;
+                    if(show_nodes)
+                    {
+                        std::cout << " :: " << label;
+                        for(auto &node : path.nodes)
+                            std::cout << "->" << node;
+                    }
+                    std::cout << std::endl;
+                }
+            }
             else if(cmd == "q")
             {
                 break;
