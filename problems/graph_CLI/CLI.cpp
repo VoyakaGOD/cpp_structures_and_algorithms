@@ -13,7 +13,6 @@ int main()
 {
     SleekGraph graph;
     std::string input;
-    std::string cmd;
     
     while(true)
     {
@@ -21,11 +20,14 @@ int main()
         {
             std::getline(std::cin, input);
             std::istringstream args(input);
+            std::string cmd;
             args >> cmd;
             if(cmd == "NODE")
             {
                 std::string label;
                 args >> label;
+                if(label.length() == 0)
+                    throw std::runtime_error("Enter node name");
                 graph.addNode(label);
             }
             else if(cmd == "EDGE")
