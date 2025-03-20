@@ -176,28 +176,28 @@ public:
     SmartList<label_t> traversePreOrder(label_t origin, SmartList<loop_t> *loops = nullptr)
     {
         SmartList<label_t> result;
-        SmartList<Node*> visited;
         SmartList<Node*> stack;
 
         Node *start_node = getNode(origin);
         if(!start_node)
             throw UnknownGraphNodesException(origin);
 
+        for(auto &node : nodes)
+            node.is_marked = false;
+
         stack.pushBack(start_node);
-        while(stack.getSize() != 0)
+        while(!stack.isEmpty())
         {
             Node *current = stack.popBack();
-            if(visited.find([current](Node *visited_node){ return current == visited_node; }) != visited.end())
+            if(current->is_marked)
                 continue;
 
-            visited.pushBack(current);
+            current->is_marked = true;
             result.pushBack(current->label);
 
             for (Edge *edge : current->outcoming_edges)
             {
-                auto visited_it = visited.find([edge](Node *visited_node){ return edge->to == visited_node; });
-                bool already_visited = (visited_it != visited.end());
-                if(already_visited)
+                if(edge->to->is_marked)
                 {
                     if(loops && (edge->to == start_node))
                         loops->pushBack(loop_t(current->label, origin));
@@ -212,7 +212,44 @@ public:
 
     SmartList<label_t> traverseReversePostOrder(label_t origin, SmartList<loop_t> *loops = nullptr)
     {
-        return {};
+        SmartList<label_t> result;
+        SmartList<Node*> stack;
+
+        Node *start_node = getNode(origin);
+        if(!start_node)
+            throw UnknownGraphNodesException(origin);
+
+        for(auto &node : nodes)
+            node.is_marked = false;
+
+        stack.pushBack(start_node);
+        while(!stack.isEmpty())
+        {
+            Node *current = stack.popBack();
+            if(current->is_marked)
+            {
+                // remove copies
+                stack.removeIf([current](Node *stack_node){ return current == stack_node; });
+                result.pushFront(current->label);
+                continue;
+            }
+
+            current->is_marked = true;
+            stack.pushBack(current);
+
+            for (Edge *edge : current->outcoming_edges)
+            {
+                if(edge->to->is_marked)
+                {
+                    if(loops && (edge->to == start_node))
+                        loops->pushBack(loop_t(current->label, origin));
+                    continue;
+                }
+                stack.pushBack(edge->to);
+            }
+        }
+
+        return result;
     }
 
     SmartList<Path> getShortestPathsFrom(label_t &label, WeightType infinity)

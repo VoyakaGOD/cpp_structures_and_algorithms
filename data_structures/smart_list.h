@@ -103,6 +103,8 @@ public:
     
     SizeType getSize() const { return size; }
 
+    bool isEmpty() const { return size == 0; }
+
     T &getFront() { return head->value; }
 
     T &getBack() { return tail->value; }
@@ -260,6 +262,25 @@ public:
             ++it;
         }
         return it;
+    }
+
+    template <typename PredicateType>
+    bool contains(PredicateType predicate)
+    {
+        SmartListIterator<T> it = find(predicate);
+        return it != end();
+    }
+
+    template <typename PredicateType>
+    void removeIf(PredicateType predicate)
+    {
+        SmartListIterator<T> it = begin();
+        while(it != end())
+        {
+            if(predicate(*it))
+                erase(it);
+            ++it;
+        }
     }
 };
 

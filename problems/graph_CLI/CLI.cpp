@@ -62,16 +62,20 @@ int main()
                     throw UnknownCommandException(cmd);
                 }
             }
-            else if(cmd == "RPO_NUMBERING")
+            else if((cmd == "RPO_NUMBERING") || (cmd == "PRE_ORDER"))
             {
                 std::string label;
                 args >> label;
                 SmartList<SleekGraph::loop_t> loops;
-                SmartList<SleekGraph::label_t> rpo = graph.traverseReversePostOrder(label, &loops);
+                SmartList<SleekGraph::label_t> labels;
+                if(cmd == "PRE_ORDER")
+                    labels = graph.traversePreOrder(label, &loops);
+                else
+                    labels = graph.traverseReversePostOrder(label, &loops);
                 for(const auto &loop : loops)
                     std::cout << "Found loop " << loop.first << "->" << loop.second << std::endl;
-                std::cout << rpo.popFront();
-                for(const auto &label : rpo)
+                std::cout << labels.popFront();
+                for(const auto &label : labels)
                     std::cout << ' ' << label;
                 std::cout << std::endl;
             }
