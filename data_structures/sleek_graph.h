@@ -6,9 +6,11 @@
 // removeEdge = O(N)
 // traverseReversePostOrder = O(?)
 // getShortestPathsFrom = O(N^2 + E)
+// getMaxFlow = O(V*E^2)
 // edges uses iterators(anchors) of SmartLists for fast deletion
 // it works because this iterators uses shared pointers
 // and nodes are removed accurately one by one with saving remaining structure
+// MAXFLOW computation assumes non-negative weights
 
 #ifndef SLEEK_GRAPH
 #define SLEEK_GRAPH
@@ -52,6 +54,7 @@ private:
         SmartList<Edge *> incoming_edges;
         SmartList<Edge *> outcoming_edges;
 
+        // getShortestPathsFrom
         WeightType auxiliary_value;
         Node *auxiliary_node;
         bool is_marked;
@@ -67,6 +70,9 @@ private:
         SmartListIterator<Edge *> from_anchor;
         SmartListIterator<Edge *> to_anchor;
         SmartListIterator<Edge> main_anchor;
+
+        // getMaxFlow
+        WeightType residual_weight;
 
         Edge(Node *from, Node *to, WeightType weight) : from(from), to(to), weight(weight) {}
     };
@@ -88,6 +94,19 @@ private:
         return nullptr;
     }
 
+    void getPairOfNodes(Node* &first, Node* &second, label_t &first_label, label_t &second_label)
+    {
+        first = getNode(first_label);
+        second = getNode(second_label);
+
+        if((!first) && (!second))
+            throw UnknownGraphNodesException(first_label, second_label);
+        if(!first)
+            throw UnknownGraphNodesException(first_label);
+        if(!second)
+            throw UnknownGraphNodesException(second_label);
+    }
+
     void removeEdgeByPointer(Edge *edge_ptr)
     {
         edge_ptr->from->outcoming_edges.erase(edge_ptr->from_anchor);
@@ -102,15 +121,9 @@ public:
 
     void addEdge(label_t &from, label_t &to, WeightType weight)
     {
-        Node *from_ptr = getNode(from);
-        Node *to_ptr = getNode(to);
-
-        if((!from_ptr) && (!to_ptr))
-            throw UnknownGraphNodesException(from, to);
-        if(!from_ptr)
-            throw UnknownGraphNodesException(from);
-        if(!to_ptr)
-            throw UnknownGraphNodesException(to);
+        Node *from_ptr = nullptr;
+        Node *to_ptr = nullptr;
+        getPairOfNodes(from_ptr, to_ptr, from, to);
 
         edges.pushBack(Edge(from_ptr, to_ptr, weight));
         from_ptr->outcoming_edges.pushBack(&edges.getBack());
@@ -136,15 +149,9 @@ public:
 
     void removeEdge(label_t &from, label_t &to)
     {
-        Node *from_ptr = getNode(from);
-        Node *to_ptr = getNode(to);
-
-        if((!from_ptr) && (!to_ptr))
-            throw UnknownGraphNodesException(from, to);
-        if(!from_ptr)
-            throw UnknownGraphNodesException(from);
-        if(!to_ptr)
-            throw UnknownGraphNodesException(to);
+        Node *from_ptr = nullptr;
+        Node *to_ptr = nullptr;
+        getPairOfNodes(from_ptr, to_ptr, from, to);
 
         SmartListIterator<Edge *> edge_it;
         if(from_ptr->outcoming_edges.getSize() < to_ptr->incoming_edges.getSize())
@@ -166,7 +173,7 @@ public:
         removeEdgeByPointer(*edge_it);
     }
 
-    SmartList<label_t> traverseReversePostOrder(label_t origin, SmartList<loop_t> *loops = nullptr)
+    SmartList<label_t> traversePreOrder(label_t origin, SmartList<loop_t> *loops = nullptr)
     {
         SmartList<label_t> result;
         SmartList<Node*> visited;
@@ -180,23 +187,19 @@ public:
         while(stack.getSize() != 0)
         {
             Node *current = stack.popBack();
+            if(visited.find([current](Node *visited_node){ return current == visited_node; }) != visited.end())
+                continue;
+
             visited.pushBack(current);
             result.pushBack(current->label);
 
             for (Edge *edge : current->outcoming_edges)
             {
-                bool already_visited = false;
-                for(Node *visited_node : visited)
-                {
-                    if(visited_node == edge->to)
-                    {
-                        already_visited = true;
-                        break;
-                    }
-                }
+                auto visited_it = visited.find([edge](Node *visited_node){ return edge->to == visited_node; });
+                bool already_visited = (visited_it != visited.end());
                 if(already_visited)
                 {
-                    if(loops && (edge->to = start_node))
+                    if(loops && (edge->to == start_node))
                         loops->pushBack(loop_t(current->label, origin));
                     continue;
                 }
@@ -207,12 +210,16 @@ public:
         return result;
     }
 
+    SmartList<label_t> traverseReversePostOrder(label_t origin, SmartList<loop_t> *loops = nullptr)
+    {
+        return {};
+    }
+
     SmartList<Path> getShortestPathsFrom(label_t &label, WeightType infinity)
     {
-        SmartListIterator<Node> node_it = getNodeIt(label);
-        if(node_it == nodes.end())
+        Node *start_node = getNode(label);
+        if(!start_node)
             throw UnknownGraphNodesException(label);
-        Node *start = static_cast<Node *>(node_it);
 
         for(auto &node : nodes)
         {
@@ -220,7 +227,7 @@ public:
             node.auxiliary_node = nullptr;
             node.is_marked = false;
         }
-        start->auxiliary_value = 0;
+        start_node->auxiliary_value = 0;
 
         for(size_t i = 0; i < nodes.getSize(); i++)
         {
@@ -247,7 +254,7 @@ public:
             }
         }
 
-        start->auxiliary_node = nullptr;
+        start_node->auxiliary_node = nullptr;
         SmartList<Path> result;
         for(auto &node : nodes)
         {
@@ -261,10 +268,28 @@ public:
                 path.nodes.pushFront(node_ptr->label);
                 node_ptr = node_ptr->auxiliary_node;
             }
-            while(node_ptr != start);
+            while(node_ptr != start_node);
             result.pushBack(path);
         }
         return result;
+    }
+
+    WeightType getMaxFlow(label_t &source, label_t &sink)
+    {
+        Node *source_node = nullptr;
+        Node *sink_node = nullptr;
+        getPairOfNodes(source_node, sink_node, source, sink);
+
+        for(auto &edge : edges)
+            edge.residual_weight = edge.weight;
+
+
+
+        WeightType max_flow = 0;
+        for(auto &edge : sink_node->incoming_edges)
+            max_flow += (edge->weight - edge->residual_weight);
+
+        return 0;
     }
 };
 

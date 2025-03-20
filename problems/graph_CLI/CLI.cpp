@@ -100,6 +100,14 @@ int main()
                     std::cout << std::endl;
                 }
             }
+            else if(cmd == "MAXFLOW")
+            {
+                std::string source;
+                std::string sink;
+                args >> source;
+                args >> sink;
+                std::cout << graph.getMaxFlow(source, sink) << std::endl;
+            }
             else if(cmd == "q")
             {
                 break;
