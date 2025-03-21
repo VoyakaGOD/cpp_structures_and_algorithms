@@ -264,7 +264,7 @@ public:
             node.auxiliary_node = nullptr;
             node.is_marked = false;
         }
-        start_node->auxiliary_value = 0;
+        start_node->auxiliary_value = static_cast<WeightType>(0);
 
         for(size_t i = 0; i < nodes.getSize(); i++)
         {
@@ -278,6 +278,10 @@ public:
                     min_weight = node.auxiliary_value;
                 }
             }
+
+            // connected component is over
+            if(!min_node)
+                break;
 
             min_node->is_marked = true;
             for(auto &edge : min_node->outcoming_edges)
@@ -311,11 +315,15 @@ public:
         return result;
     }
 
+    // returns 0 if source == sink
     WeightType getMaxFlow(label_t &source, label_t &sink)
     {
         Node *source_node = nullptr;
         Node *sink_node = nullptr;
         getPairOfNodes(source_node, sink_node, source, sink);
+
+        if(source_node == sink_node)
+            return static_cast<WeightType>(0);
 
         for(auto &edge : edges)
             edge.residual_weight = edge.weight;
@@ -341,7 +349,7 @@ public:
                 for(Edge *edge : current->outcoming_edges)
                 {
                     // no edge
-                    if(edge->residual_weight == 0)
+                    if(edge->residual_weight == static_cast<WeightType>(0))
                         continue;
                     
                     Node *next = edge->to;
@@ -396,7 +404,7 @@ public:
             }
         }
 
-        WeightType max_flow = 0;
+        WeightType max_flow = static_cast<WeightType>(0);
         for(auto &edge : sink_node->incoming_edges)
             max_flow += (edge->weight - edge->residual_weight);
 
