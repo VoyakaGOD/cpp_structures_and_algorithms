@@ -4,9 +4,10 @@
 // addEdge = O(N)
 // removeNode = O(N + E)
 // removeEdge = O(N)
-// traverseReversePostOrder = O(?)
+// traversePreOrder = O(E)
+// traverseReversePostOrder = O(E)
 // getShortestPathsFrom = O(N^2 + E)
-// getMaxFlow = O(V*E^2)
+// getMaxFlow = O(N*E^2)
 // edges uses iterators(anchors) of SmartLists for fast deletion
 // it works because this iterators uses shared pointers
 // and nodes are removed accurately one by one with saving remaining structure
@@ -54,9 +55,9 @@ private:
         SmartList<Edge *> incoming_edges;
         SmartList<Edge *> outcoming_edges;
 
-        // getShortestPathsFrom
         WeightType auxiliary_value;
         Node *auxiliary_node;
+        Edge *auxiliary_edge;
         bool is_marked;
 
         Node(label_t &label) : label(label) {}
@@ -71,7 +72,6 @@ private:
         SmartListIterator<Edge *> to_anchor;
         SmartListIterator<Edge> main_anchor;
 
-        // getMaxFlow
         WeightType residual_weight;
 
         Edge(Node *from, Node *to, WeightType weight) : from(from), to(to), weight(weight) {}
@@ -320,13 +320,87 @@ public:
         for(auto &edge : edges)
             edge.residual_weight = edge.weight;
 
+        while(true)
+        {
+            SmartList<Node*> queue;
+            queue.pushBack(source_node);
+            bool path_found = false;
+            for(auto &node : nodes)
+                node.is_marked = false;
+            
+            while (!queue.isEmpty()) 
+            {
+                Node *current = queue.popFront();
+                if (current == sink_node) 
+                {
+                    path_found = true;
+                    break;
+                }
 
+                // direct edges 
+                for(Edge *edge : current->outcoming_edges)
+                {
+                    // no edge
+                    if(edge->residual_weight == 0)
+                        continue;
+                    
+                    Node *next = edge->to;
+                    if(!next->is_marked)
+                    {
+                        next->is_marked = true;
+                        next->auxiliary_edge = edge;
+                        next->auxiliary_value = edge->residual_weight;
+                        next->auxiliary_node = current;
+                        queue.pushBack(next);
+                    }
+                }
+
+                // reverse edges 
+                for(Edge *edge : current->incoming_edges)
+                {
+                    // no edge
+                    if(edge->residual_weight == edge->weight)
+                        continue;
+
+                    Node *next = edge->from;
+                    if(!next->is_marked)
+                    {
+                        next->is_marked = true;
+                        next->auxiliary_edge = edge;
+                        next->auxiliary_value = (edge->weight - edge->residual_weight);
+                        next->auxiliary_node = current;
+                        queue.pushBack(next);
+                    }
+                }
+            }
+
+            if (!path_found)
+                break;
+
+            Node *current = sink_node;
+            WeightType path_flow = current->auxiliary_value;
+            while(current != source_node)
+            {
+                path_flow = std::min(path_flow, current->auxiliary_value);
+                current = current->auxiliary_node;
+            }
+
+            current = sink_node;
+            while(current != source_node) 
+            {
+                if(current->auxiliary_edge->to == current)
+                    current->auxiliary_edge->residual_weight -= path_flow;
+                else
+                    current->auxiliary_edge->residual_weight += path_flow;
+                current = current->auxiliary_node;
+            }
+        }
 
         WeightType max_flow = 0;
         for(auto &edge : sink_node->incoming_edges)
             max_flow += (edge->weight - edge->residual_weight);
 
-        return 0;
+        return max_flow;
     }
 };
 

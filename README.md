@@ -8,6 +8,8 @@ There are also solutions to several problems using these structures and algorith
 
 - double linked list via smart pointers
 
+- graph
+
 # Implemented algorithms:
 
 - bubble sort
@@ -17,6 +19,14 @@ There are also solutions to several problems using these structures and algorith
 - comb sort
 
 - radix sort
+
+- graph(Pre Order numbering)
+
+- graph(Reverse Post Order numbering)
+
+- graph(Dijkstra)
+
+- graph(maxflow)
 
 # Benchmarks:
 
