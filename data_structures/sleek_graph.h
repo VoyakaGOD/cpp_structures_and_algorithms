@@ -29,9 +29,7 @@ public:
         std::runtime_error("Unknown nodes " + label1 + " " + label2) {}
 };
 
-#define WeightType size_t
-
-//template <typename WeightType = size_t>
+template <typename WeightType = size_t>
 class SleekGraph
 {
 public:

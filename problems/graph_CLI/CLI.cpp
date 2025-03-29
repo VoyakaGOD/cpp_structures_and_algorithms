@@ -11,7 +11,7 @@ public:
 
 int main()
 {
-    SleekGraph graph;
+    SleekGraph<> graph;
     std::string input;
     
     while(true)
@@ -66,8 +66,8 @@ int main()
             {
                 std::string label;
                 args >> label;
-                SmartList<SleekGraph::loop_t> loops;
-                SmartList<SleekGraph::label_t> labels;
+                SmartList<SleekGraph<>::loop_t> loops;
+                SmartList<SleekGraph<>::label_t> labels;
                 if(cmd == "PRE_ORDER")
                     labels = graph.traversePreOrder(label, &loops);
                 else
@@ -85,7 +85,7 @@ int main()
                 std::string extra;
                 args >> label;
                 args >> extra;
-                SmartList<SleekGraph::Path> paths = graph.getShortestPathsFrom(label, static_cast<size_t>(-1ll));
+                SmartList<SleekGraph<>::Path> paths = graph.getShortestPathsFrom(label, static_cast<size_t>(-1ll));
                 bool show_nodes = false;
                 if(extra == "NODES")
                     show_nodes = true;

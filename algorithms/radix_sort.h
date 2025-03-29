@@ -28,18 +28,18 @@ class RadixSorter
 {
 private:
     template <typename RandomIt, typename AnotherRandomIt, typename DigitExtractor>
-    static void countingSort(RandomIt src_first, RandomIt src_last, AnotherRandomIt dst, DigitExtractor getDigit, size_t digitIndex)
+    static void countingSort(RandomIt src_first, RandomIt src_last, AnotherRandomIt dst, DigitExtractor getDigit, size_t digit_index)
     {
         size_t count[RADIX_SORT_BASE] = {};
         for(RandomIt it = src_first; it < src_last; ++it)
-            count[getDigit(*it, digitIndex)]++;
+            count[getDigit(*it, digit_index)]++;
 
         for(unsigned int i = 1; i < RADIX_SORT_BASE; i++)
             count[i] += count[i - 1];
 
         for(RandomIt it = src_last - 1; it >= src_first; --it)
         {
-            uint8_t digit = getDigit(*it, digitIndex);
+            uint8_t digit = getDigit(*it, digit_index);
             dst[--count[digit]] = std::move(*it);
         }
     }
@@ -53,12 +53,12 @@ public:
         using T = typename std::iterator_traits<RandomIt>::value_type;
         CushyVector<T> buffer(last - first);
 
-        for(int digitIndex = 0; digitIndex < digits_count; digitIndex++)
+        for(int digit_index = 0; digit_index < digits_count; digit_index++)
         {
-            if(digitIndex & 0x1)
-                countingSort(buffer.begin(), buffer.end(), first, getDigit, digitIndex);
+            if(digit_index & 0x1)
+                countingSort(buffer.begin(), buffer.end(), first, getDigit, digit_index);
             else
-                countingSort(first, last, buffer.begin(), getDigit, digitIndex);
+                countingSort(first, last, buffer.begin(), getDigit, digit_index);
         }
 
         if(digits_count & 0x1)
