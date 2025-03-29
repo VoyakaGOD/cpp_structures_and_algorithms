@@ -13,7 +13,7 @@
     rows: (auto, 32pt),
     stroke: (x, y) => (y: if y > 0 {1pt}, x: if y > 0 {1pt}),
     fill: (x, y) => if (y > 0) {
-      if x in crux {crux_color} 
+      if x in crux {crux_color}
       else if x in selected {gray}
     },
     align: horizon,
