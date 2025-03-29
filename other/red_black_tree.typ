@@ -4,7 +4,7 @@
 #let r = rgb("C44444")
 #let b = luma(55%)
 
-#let rbtree(data) = align(
+#let rbtree(data, route: ()) = align(
   center,
   cetz.canvas({
     cetz.tree.tree(
@@ -18,7 +18,7 @@
             (), 
             radius: .45, 
             fill: node.content.color, 
-            stroke: black
+            stroke: if node.content.text in route {blue + 2pt} else {black}
           )
           content((), text(black, [#node.content.text]))
         }
@@ -29,7 +29,11 @@
       draw-edge: (from, to, src, dst, ..) => {
         if type(dst.content) == dictionary {
           let (a, b) = (from + ".center", to + ".center")
-          line((a, 0, b), (b, 0, a), stroke: black)
+          line(
+            (a, 0, b), 
+            (b, 0, a), 
+            stroke: if dst.content.text in route {blue + 2pt} else {black}
+          )
         }
       }
     )
@@ -122,3 +126,40 @@
 #rbtree(node(b, 681, node(r, 148, node(b, 7, [], []), node(b, 415, node(r, 304, [], []), node(b, 571, [], []))), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))))
 - recolor
 #rbtree(node(b, 681, node(r, 148, node(b, 7, [], []), node(b, 415, node(r, 304, [], []), node(r, 571, [], []))), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))))
+
+= Find 148:
+- 148 < 681
+#rbtree(node(b, 681, node(r, 148, node(b, 7, [], []), node(b, 415, node(r, 304, [], []), node(r, 571, [], []))), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))), route: (681, 148))
+
+#pagebreak()
+
+= Get max:
+- MAX is the most right item
+- MAX = 824
+#rbtree(node(b, 681, node(r, 148, node(b, 7, [], []), node(b, 415, node(r, 304, [], []), node(r, 571, [], []))), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))), route: (681, 809, 824))
+
+= Find 568:
+- 148 < 304 < 415 < 568 < 571 < 681
+#rbtree(node(b, 681, node(r, 148, node(b, 7, [], []), node(b, 415, node(r, 304, [], []), node(r, 571, [], []))), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))), route: (681, 148, 415, 571))
+- key not found
+
+#pagebreak()
+
+= Delete 148:
+Next key value is 304
+#rbtree(node(b, 681, node(r, 304, node(b, 7, [], []), node(b, 415, [], node(r, 571, [], []))), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))))
+
+= Get min:
+- MIN is the most left item
+- MIN = 7
+#rbtree(node(b, 681, node(r, 304, node(b, 7, [], []), node(b, 415, [], node(r, 571, [], []))), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))), route: (681, 304, 7))
+
+#pagebreak()
+
+= Find 571:
+- 304 < 415 < 571 < 681
+#rbtree(node(b, 681, node(r, 304, node(b, 7, [], []), node(b, 415, [], node(r, 571, [], []))), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))), route: (681, 304, 415, 571))
+
+= Delete 571:
+[571] is leaf
+#rbtree(node(b, 681, node(r, 304, node(b, 7, [], []), node(b, 415, [], [])), node(r, 809, node(b, 736, [], []), node(b, 824, node(r, 820, [], []), []))))
